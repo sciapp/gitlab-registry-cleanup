@@ -1,0 +1,1 @@
+gitlab-registry-usage>=0.2.1
