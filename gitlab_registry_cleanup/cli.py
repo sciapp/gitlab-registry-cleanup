@@ -34,7 +34,7 @@ class CredentialsReadError(Exception):
 def has_terminal_color() -> bool:
     try:
         return os.isatty(sys.stderr.fileno()) and int(subprocess.check_output(['tput', 'colors'])) >= 8
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
 
