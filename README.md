@@ -11,15 +11,23 @@ of a GitLab server.
 
 ## Installation
 
-The latest version is available from PyPI:
+The latest version is available from PyPI and needs Python 3.3+:
 
 ```bash
-pip install gitlab-registry-cleanup
+python3 -m pip install gitlab-registry-cleanup
 ```
 
 This package can only be used on a GitLab server, since it needs read access to the Docker registry files stored on
 disk. The script needs root privileges, so either use the root account or the `sudo` utility. The actual deletion of
 images is done via the GitLab web api to prevent any data loss.
+
+If you use the recommended operating system for GitLab (Ubuntu Server), you can install Python 3 and `pip` with
+
+```bash
+apt install python3-pip
+```
+
+if not already installed.
 
 ## Usage
 
