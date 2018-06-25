@@ -36,36 +36,41 @@ class LocalRegistry:
         repository_imagehashes = {}  # type: Dict[str, List[str]]
         for repository_path in self.repository_paths:
             imagehashes = []  # type: List[str]
-            for image_hash in os.listdir(
-                os.path.join(self._docker_repositories_root, repository_path, REVISIONS_DIRECTORY)
-            ):
-                try:
-                    with open(
-                        os.path.join(
-                            self._docker_repositories_root, repository_path, REVISIONS_DIRECTORY, image_hash,
-                            LINK_FILENAME
-                        ), 'r'
-                    ) as f:
-                        image = f.readline()
-                    imagehashes.append(image)
-                except OSError:
-                    pass
+            try:
+                for image_hash in os.listdir(
+                    os.path.join(self._docker_repositories_root, repository_path, REVISIONS_DIRECTORY)
+                ):
+                    try:
+                        with open(
+                            os.path.join(
+                                self._docker_repositories_root, repository_path, REVISIONS_DIRECTORY, image_hash,
+                                LINK_FILENAME
+                            ), 'r'
+                        ) as f:
+                            image = f.readline()
+                        imagehashes.append(image)
+                    except OSError:
+                        pass
+            except OSError:
+                pass
             repository_imagehashes[repository_path] = imagehashes
         return repository_imagehashes
 
     def _find_repository_tags(self) -> Dict[str, List[str]]:
-        repository_tags = {
-            repository_path:
-            [tag for tag in os.listdir(os.path.join(self._docker_repositories_root, repository_path, TAGS_DIRECTORY))]
-            for repository_path in self.repository_paths
-        }
+        repository_tags = {}  # type: Dict[str, List[str]]
+        for repository_path in self.repository_paths:
+            try:
+                tags = os.listdir(os.path.join(self._docker_repositories_root, repository_path, TAGS_DIRECTORY))
+            except OSError:
+                tags = []
+            repository_tags[repository_path] = tags
         return repository_tags
 
     def _find_repository_tagged_imagehashes(self) -> Dict[str, List[str]]:
         repository_tagged_imagehashes = {}  # type: Dict[str, List[str]]
         for repository_path in self.repository_paths:
             tagged_imagehashes = []  # type: List[str]
-            for tag in os.listdir(os.path.join(self._docker_repositories_root, repository_path, TAGS_DIRECTORY)):
+            for tag in self.repository_tags[repository_path]:
                 try:
                     with open(
                         os.path.join(
