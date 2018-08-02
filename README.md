@@ -68,7 +68,5 @@ are still stored on disk. To delete unused image layers, you must run the Docker
 installed the GitLab omnibus package, you can run the following commands:
 
 ```bash
-sudo gitlab-ctl stop registry
-sudo /opt/gitlab/embedded/bin/registry garbage-collect /var/opt/gitlab/registry/config.yml
-sudo gitlab-ctl start registry
+sudo gitlab-ctl registry-garbage-collect
 ```
