@@ -8,6 +8,7 @@ import subprocess
 import sys
 from typing import cast, Any, Callable
 from .cleanup import soft_delete_untagged_imagehashes
+from .registry import DEFAULT_REGISTRY_ROOT
 from ._version import __version__, __version_info__  # noqa: F401 # pylint: disable=unused-import
 
 __author__ = 'Ingo Heimbach'
@@ -89,6 +90,14 @@ def get_argumentparser() -> argparse.ArgumentParser:
         help='GitLab registry server hostname (for example `registry.mygitlab.com`)'
     )
     parser.add_argument(
+        '-p',
+        '--registry-path',
+        action='store',
+        dest='local_registry_root',
+        default=DEFAULT_REGISTRY_ROOT,
+        help='Path to the registry directory on the GitLab server (default: %(default)s)'
+    )
+    parser.add_argument(
         '-c',
         '--credentials-file',
         action='store',
@@ -154,7 +163,7 @@ def parse_arguments() -> AttributeDict:
 
 
 def cleanup_gitlab_registry(
-    gitlab_server: str, registry_server: str, username: str, password: str, dry_run: bool
+    gitlab_server: str, registry_server: str, local_registry_root: str, username: str, password: str, dry_run: bool
 ) -> None:
     gitlab_base_url = 'https://{}/'.format(gitlab_server)
     registry_base_url = 'https://{}/'.format(registry_server)
@@ -192,7 +201,8 @@ def cleanup_gitlab_registry(
                 )
 
     soft_delete_untagged_imagehashes(
-        gitlab_base_url, registry_base_url, username, password, dry_run=dry_run, notify_callback=console_output
+        gitlab_base_url, registry_base_url, username, password, local_registry_root, dry_run=dry_run,
+        notify_callback=console_output
     )
 
 
@@ -201,7 +211,10 @@ def main() -> None:
     if args.print_version:
         print('{}, version {}'.format(os.path.basename(sys.argv[0]), __version__))
     else:
-        cleanup_gitlab_registry(args.gitlab_server, args.registry_server, args.username, args.password, args.dry_run)
+        cleanup_gitlab_registry(
+            args.gitlab_server, args.registry_server, args.local_registry_root, args.username, args.password,
+            args.dry_run
+        )
     sys.exit(0)
 
 
