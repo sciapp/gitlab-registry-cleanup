@@ -147,7 +147,10 @@ def parse_arguments() -> AttributeDict:
             except IOError:
                 raise CredentialsReadError("Could not read credentials file {}.".format(args.credentials_file))
         elif args.username is not None:
-            args["password"] = getpass.getpass()
+            if sys.stdin.isatty():
+                args["password"] = getpass.getpass()
+            else:
+                args["password"] = sys.stdin.readline().rstrip()
         else:
             raise CredentialsReadError("Could not get credentials for the GitLab web api.")
 
