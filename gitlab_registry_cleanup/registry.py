@@ -1,13 +1,13 @@
 import os
-from typing import Dict, List, Optional  # noqa: F401  # pylint: disable=unused-import
+from typing import Dict, List, Optional  # noqa: F401 pylint: disable=unused-import
 
-DEFAULT_REGISTRY_ROOT = '/var/opt/gitlab/gitlab-rails/shared/registry'
-RELATIVE_REPOSITORIES_ROOT = 'docker/registry/v2/repositories'
-MANIFESTS_DIRECTORY = '_manifests'
-REVISIONS_DIRECTORY = '_manifests/revisions/sha256'
-TAGS_DIRECTORY = '_manifests/tags'
-TAG_CURRENT_DIRECTORY = 'current'
-LINK_FILENAME = 'link'
+DEFAULT_REGISTRY_ROOT = "/var/opt/gitlab/gitlab-rails/shared/registry"
+RELATIVE_REPOSITORIES_ROOT = "docker/registry/v2/repositories"
+MANIFESTS_DIRECTORY = "_manifests"
+REVISIONS_DIRECTORY = "_manifests/revisions/sha256"
+TAGS_DIRECTORY = "_manifests/tags"
+TAG_CURRENT_DIRECTORY = "current"
+LINK_FILENAME = "link"
 
 
 class LocalRegistry:
@@ -43,9 +43,13 @@ class LocalRegistry:
                     try:
                         with open(
                             os.path.join(
-                                self._docker_repositories_root, repository_path, REVISIONS_DIRECTORY, image_hash,
-                                LINK_FILENAME
-                            ), 'r'
+                                self._docker_repositories_root,
+                                repository_path,
+                                REVISIONS_DIRECTORY,
+                                image_hash,
+                                LINK_FILENAME,
+                            ),
+                            "r",
                         ) as f:
                             image = f.readline()
                         imagehashes.append(image)
@@ -74,8 +78,12 @@ class LocalRegistry:
                 try:
                     with open(
                         os.path.join(
-                            self._docker_repositories_root, repository_path, TAGS_DIRECTORY, tag, TAG_CURRENT_DIRECTORY,
-                            LINK_FILENAME
+                            self._docker_repositories_root,
+                            repository_path,
+                            TAGS_DIRECTORY,
+                            tag,
+                            TAG_CURRENT_DIRECTORY,
+                            LINK_FILENAME,
                         )
                     ) as f:
                         tagged_imagehash = f.readline()
@@ -88,8 +96,8 @@ class LocalRegistry:
     def _find_repository_untagged_imagehashes(self) -> Dict[str, List[str]]:
         repository_untagged_imagehashes = {
             repository_path: list(
-                set(self.repository_imagehashes[repository_path]) -
-                set(self.repository_tagged_imagehashes[repository_path])
+                set(self.repository_imagehashes[repository_path])
+                - set(self.repository_tagged_imagehashes[repository_path])
             )
             for repository_path in self.repository_paths
         }
