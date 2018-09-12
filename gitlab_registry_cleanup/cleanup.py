@@ -10,7 +10,7 @@ def soft_delete_untagged_imagehashes(
     admin_auth_token: str,
     local_registry_root: str = DEFAULT_REGISTRY_ROOT,
     dry_run: bool = False,
-    notify_callback: Optional[Callable[[str, str, bool], None]] = None
+    notify_callback: Optional[Callable[[str, str, bool], None]] = None,
 ) -> None:
     local_registry = LocalRegistry(local_registry_root)
     gitlab_registry = GitLabRegistry(gitlab_url, registry_url, admin_username, admin_auth_token)
