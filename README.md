@@ -3,7 +3,7 @@
 ## Introduction
 
 *GitLab-Registry-Cleanup* is a Python package for finding and (soft) deleting untagged Docker images in a GitLab Docker
-registry. Currently (April 2018), Docker registries only cleanup data if the removal on an image is requested explicitly
+registry. Currently (April 2018), Docker registries only cleanup data if the removal of an image is requested explicitly
 by the user. Therefore, **the registry will keep on growing** if users only push new images. **Overwriting existing tags
 is not sufficient** since images could be referenced by their SHA256 hash by an external resource. This tool assumes
 that untagged images are not needed any more and deletes them explicitly. It can only be used for the embedded registry
