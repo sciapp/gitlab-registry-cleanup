@@ -37,7 +37,8 @@ After installing with `pip`, a `gitlab-registry-cleanup` command is available:
 
 ```
 usage: gitlab-registry-cleanup [-h] [-g GITLAB_SERVER] [-r REGISTRY_SERVER]
-                               [-c CREDENTIALS_FILE] [-u USERNAME] [-n] [-V]
+                               [-p LOCAL_REGISTRY_ROOT] [-c CREDENTIALS_FILE]
+                               [-u USERNAME] [-n] [-V]
 
 gitlab-registry-cleanup is a utility for cleaning up a GitLab registry by soft deleting untagged images.
 
@@ -48,6 +49,10 @@ optional arguments:
   -r REGISTRY_SERVER, --registry-server REGISTRY_SERVER
                         GitLab registry server hostname (for example
                         `registry.mygitlab.com`)
+  -p LOCAL_REGISTRY_ROOT, --registry-path LOCAL_REGISTRY_ROOT
+                        Path to the registry directory on the GitLab server
+                        (default: /var/opt/gitlab/gitlab-
+                        rails/shared/registry)
   -c CREDENTIALS_FILE, --credentials-file CREDENTIALS_FILE
                         path to a file containing username and password/access
                         token (on two separate lines)
