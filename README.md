@@ -9,8 +9,9 @@ is not sufficient** since images could be referenced by their SHA256 hash by an 
 that untagged images are not needed any more and deletes them explicitly. It can only be used for the embedded registry
 of a GitLab server.
 
-NOTE: `registry garbage-collect` will have `-m` flag in 2.7.0, see [issue #1844](https://github.com/docker/distribution/issues/1844)
-and [pull request #2302](https://github.com/docker/distribution/pull/2302).
+**NOTE**: `registry garbage-collect` will have a `-m` flag in 2.7.0, see
+[issue #1844](https://github.com/docker/distribution/issues/1844) and
+[pull request #2302](https://github.com/docker/distribution/pull/2302).
 
 ## Installation
 
