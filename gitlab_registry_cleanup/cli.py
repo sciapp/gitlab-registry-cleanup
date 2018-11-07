@@ -47,7 +47,7 @@ class TerminalColorCodes:
         BLUE = "\033[34;1m"
         PURPLE = "\033[35;1m"
         CYAN = "\033[36;1m"
-        GRAY = "\033[36;1m"
+        GRAY = "\033[37;1m"
         RESET = "\033[0m"
     else:
         RED = ""
@@ -138,7 +138,7 @@ def parse_arguments() -> AttributeDict:
             if match_obj:
                 args[server] = match_obj.group(1)
             else:
-                raise InvalidServerNameError("{} is not a valid server name.".format(server))
+                raise InvalidServerNameError("{} is not a valid server name.".format(args[server]))
         if args.credentials_file is not None:
             try:
                 with open(args.credentials_file, "r") as f:
