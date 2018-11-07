@@ -225,18 +225,30 @@ def cleanup_gitlab_registry(
 
 
 def main() -> None:
-    args = parse_arguments()
-    if args.print_version:
-        print("{}, version {}".format(os.path.basename(sys.argv[0]), __version__))
-    else:
-        cleanup_gitlab_registry(
-            args.gitlab_server,
-            args.registry_server,
-            args.local_registry_root,
-            args.username,
-            args.password,
-            args.dry_run,
-        )
+    expected_exceptions = (
+        MissingServerNameError,
+        InvalidServerNameError,
+        CredentialsReadError,
+    )
+    try:
+        args = parse_arguments()
+        if args.print_version:
+            print("{}, version {}".format(os.path.basename(sys.argv[0]), __version__))
+        else:
+            cleanup_gitlab_registry(
+                args.gitlab_server,
+                args.registry_server,
+                args.local_registry_root,
+                args.username,
+                args.password,
+                args.dry_run,
+            )
+    except expected_exceptions as e:
+        print("{}error{}: {}".format(TerminalColorCodes.RED, TerminalColorCodes.RESET, str(e)), file=sys.stderr)
+        for i, exception_class in enumerate(expected_exceptions, start=3):
+            if isinstance(e, exception_class):
+                sys.exit(i)
+        sys.exit(1)
     sys.exit(0)
 
 
