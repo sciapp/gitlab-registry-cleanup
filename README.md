@@ -42,7 +42,7 @@ After installing with `pip`, a `gitlab-registry-cleanup` command is available:
 ```
 usage: gitlab-registry-cleanup [-h] [-g GITLAB_SERVER] [-r REGISTRY_SERVER]
                                [-p LOCAL_REGISTRY_ROOT] [-c CREDENTIALS_FILE]
-                               [-u USERNAME] [-n] [-V]
+                               [-u USERNAME] [-n] [-k] [-V]
 
 gitlab-registry-cleanup is a utility for cleaning up a GitLab registry by soft deleting untagged images.
 
@@ -64,6 +64,7 @@ optional arguments:
                         user account for querying the GitLab API (default:
                         root)
   -n, --dry-run         only print which images would be deleted
+  -k, --insecure        allow insecure connections over plain HTTP
   -V, --version         print the version number and exit
 ```
 

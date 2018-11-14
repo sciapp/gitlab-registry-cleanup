@@ -32,6 +32,14 @@ class CredentialsReadError(Exception):
     pass
 
 
+class UnsupportedProtocolError(Exception):
+    pass
+
+
+class PlainHttpNotAllowedError(Exception):
+    pass
+
+
 def has_terminal_color() -> bool:
     try:
         return os.isatty(sys.stderr.fileno()) and int(subprocess.check_output(["tput", "colors"])) >= 8
@@ -117,6 +125,9 @@ def get_argumentparser() -> argparse.ArgumentParser:
         "-n", "--dry-run", action="store_true", dest="dry_run", help="only print which images would be deleted"
     )
     parser.add_argument(
+        "-k", "--insecure", action="store_true", dest="insecure", help="allow insecure connections over plain HTTP"
+    )
+    parser.add_argument(
         "-V", "--version", action="store_true", dest="print_version", help="print the version number and exit"
     )
     return parser
@@ -134,18 +145,30 @@ def parse_arguments() -> AttributeDict:
             raise MissingServerNameError("No registry server is given.")
     if not args.print_version:
         for server in ("gitlab_server", "registry_server"):
-            match_obj = re.match(r"(?:https?//)?(.+)/?", args[server])
+            match_obj = re.match(r"([a-zA-Z]+://)?(.+)/?", args[server])
             if match_obj:
-                args[server] = match_obj.group(1)
+                protocol = match_obj.group(1)
+                if protocol is None:
+                    protocol = "https"
+                else:
+                    protocol = protocol[:-3].lower()  # discard "://"
+                args[server + "_protocol"] = protocol
+                args[server] = match_obj.group(2)
             else:
                 raise InvalidServerNameError("{} is not a valid server name.".format(args[server]))
+            if args[server + "_protocol"] not in ("http", "https"):
+                raise UnsupportedProtocolError('The protocol "{}" is not supported.'.format(args[server + "_protocol"]))
+            if args[server + "_protocol"] == "http" and not args.insecure:
+                raise PlainHttpNotAllowedError(
+                    'Plain http is not allowed by default. Use the "-k" switch to allow insecure connections.'
+                )
         if args.credentials_file is not None:
             try:
                 with open(args.credentials_file, "r") as f:
                     for key in ("username", "password"):
                         args[key] = f.readline().strip()
             except IOError:
-                raise CredentialsReadError("Could not read credentials file {}.".format(args.credentials_file))
+                raise CredentialsReadError('Could not read credentials file "{}".'.format(args.credentials_file))
         elif args.username is not None:
             if sys.stdin.isatty():
                 args["password"] = getpass.getpass()
@@ -158,10 +181,17 @@ def parse_arguments() -> AttributeDict:
 
 
 def cleanup_gitlab_registry(
-    gitlab_server: str, registry_server: str, local_registry_root: str, username: str, password: str, dry_run: bool
+    gitlab_server: str,
+    gitlab_server_protocol: str,
+    registry_server: str,
+    registry_server_protocol: str,
+    local_registry_root: str,
+    username: str,
+    password: str,
+    dry_run: bool,
 ) -> None:
-    gitlab_base_url = "https://{}/".format(gitlab_server)
-    registry_base_url = "https://{}/".format(registry_server)
+    gitlab_base_url = "{}://{}/".format(gitlab_server_protocol, gitlab_server)
+    registry_base_url = "{}://{}/".format(registry_server_protocol, registry_server)
 
     def console_output(repository: str, image_hash: str, successful: bool) -> None:
         if not dry_run:
@@ -229,6 +259,8 @@ def main() -> None:
         MissingServerNameError,
         InvalidServerNameError,
         CredentialsReadError,
+        UnsupportedProtocolError,
+        PlainHttpNotAllowedError,
     )
     try:
         args = parse_arguments()
@@ -237,7 +269,9 @@ def main() -> None:
         else:
             cleanup_gitlab_registry(
                 args.gitlab_server,
+                args.gitlab_server_protocol,
                 args.registry_server,
+                args.registry_server_protocol,
                 args.local_registry_root,
                 args.username,
                 args.password,
