@@ -1,5 +1,10 @@
 # GitLab-Registry-Cleanup
 
+## Deprecation notice
+
+Since GitLab version 11.10 the `gitlab-ctl registry-garbage-collect` command has a `--delete-manifests` flag which
+enables the deletion of all untagged Docker images. This project is not needed any more.
+
 ## Introduction
 
 *GitLab-Registry-Cleanup* is a Python package for finding and (soft) deleting untagged Docker images in a GitLab Docker
